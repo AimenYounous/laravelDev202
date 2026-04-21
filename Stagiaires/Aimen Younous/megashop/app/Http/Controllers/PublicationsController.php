@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PublicationsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class PublicationsController extends Controller
 {
@@ -56,9 +57,15 @@ class PublicationsController extends Controller
      */
     public function edit(Publication $publication)
     {
-        if(Auth::id()!==$publication->profile_id){
-            return abort(403);
-        }
+        // if(Auth::id()!==$publication->profile_id){
+        //     return abort(403);
+        // }
+
+        // if(!Gate::allows('update-publication',$publication)){
+        //     return abort(403);
+        // } 
+
+        Gate::authorize('update-publication',$publication);
         return view("publications.edit",compact("publication"));
     }
 
@@ -67,6 +74,11 @@ class PublicationsController extends Controller
      */
     public function update(Request $request, Publication $publication)
     {
+        // if(!Gate::allows('update-publication',$publication)){
+        //     return abort(403);
+        // } 
+
+        Gate::authorize('update-publication',$publication);
         $request->validate([
             'titre'=>'required|min:5|max:150',
             'body'=>'required|min:20',
@@ -88,6 +100,15 @@ class PublicationsController extends Controller
      */
     public function destroy(Publication $publication)
     {
+        // if(Auth::id()!==$publication->profile_id){
+        //     return abort(403);
+        // }
+
+        // if(!Gate::allows('update-publication',$publication)){
+        //     return abort(403);
+        // } 
+
+        Gate::authorize('update-publication',$publication);
         $publication->delete();
         return to_route('publications.index')->with('success','Publication Supprimer  success');
     }
