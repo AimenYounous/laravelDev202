@@ -4,7 +4,7 @@
                         <div class="container">
                             <div class="row ">
                                 <div class="col-md-5 align-items-center
-                                justify-content-center">
+                                justify-content-center position-relative">
                                     <img class="rounded-circle" width="70" src="{{asset('storage/'.$publication->profile?->image)}}" alt="image">
                                     <p>{{$publication->profile?->name}}</p>
                                     <p>{{$publication->profile?->created_at}}</p>

@@ -56,6 +56,9 @@ class PublicationsController extends Controller
      */
     public function edit(Publication $publication)
     {
+        if(Auth::id()!==$publication->profile_id){
+            return abort(403);
+        }
         return view("publications.edit",compact("publication"));
     }
 
