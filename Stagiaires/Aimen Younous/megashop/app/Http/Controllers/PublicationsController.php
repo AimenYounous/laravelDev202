@@ -8,10 +8,11 @@ use App\Http\Requests\PublicationsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PublicationsController extends Controller
 {
-    
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -65,7 +66,11 @@ class PublicationsController extends Controller
         //     return abort(403);
         // } 
 
-        Gate::authorize('update-publication',$publication);
+        // Gate::authorize('update-publication',$publication);
+
+        // Gate::authorize('update',$publication);
+
+        $this->authorize('update',$publication);
         return view("publications.edit",compact("publication"));
     }
 

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Publication;
+use App\Policies\publicationPolicy;
 use Generator;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +18,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         //
     }
+
+    protected $policies = [
+        Publication::class=>PublicationPolicy::class
+    ];
 
     /**
      * Bootstrap services.
