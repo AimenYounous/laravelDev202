@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
+use App\Mail\ProfileMail;
+use App\Models\Profile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ShopController extends Controller
 

@@ -1,45 +1,32 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Models\Profile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
-use App\Mail\ProfileMail;
-use App\Models\Profile;
+use App\Http\Resources\ProfileResource;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 
 class ProfileController extends Controller
 {
-    public function index(){
-        $profiles = Profile::paginate(12);
-        return view('profile.index',compact('profiles'));
-    }
-    public function show(Profile $profile){
-        // if($profile===NULL){
-        //     return abort(403);
-        // }
-
-        return view('profile.show',compact('profile'));
-       }
-    public function create(){
-        return view('profile.create');
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        Cache::remember('profiles',7000,function(){
+            return  ProfileResource::collection(Profile::all());
+        });
+        // return response()->json(['success'=>true,'data'=>$profile],200); 
     }
 
-    public function verifyEmail(string $hash){
-        [$createdAt ,$id] = explode("///",base64_decode($hash)) ;
-        $profile = Profile::findOrFail($id);
-        
-        if($profile->created_at->toDateTimeString() !== $createdAt){
-            return abort(404);
-        }
-        $profile->fill([
-            'email_verified_at'=> now()
-        ])->save();
-        $name = $profile->name;
-        return view('emails.verefied',compact('name'));
-    }
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(ProfileRequest $request){
         //Validation
         $formFields = $request->validated();
@@ -52,20 +39,25 @@ class ProfileController extends Controller
         // dd($formFields);
         //Insertion
         $profile = Profile::create($formFields);
-        Mail::to('oneshop0111@gmail.com')->send(new ProfileMail($profile));
+        dd($profile);
+        Cache::forget('profiles');
 
-        return redirect()->route('profiles.index')->with("success","profile $request->name ajouter succeesfully");
+        return new ProfileResource($profile);
     }
 
-    public function destroy(Profile $profile){
-        $profile->delete();
-        return to_route('profiles.index')->with('success',"Profile $profile->name est Supprimer ");
+    /**
+     * Display the specified resource.
+     */
+    public function show(Profile $profile)
+    {
+        // return response()->json($profile);
+
+        return new ProfileResource($profile);
     }
 
-    public function edit(Profile $profile){
-        return view('profile.edit',compact('profile'));
-    }
-
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request,Profile $profile){
         $request->validate([
             'name' => 'required|between:5,20',
@@ -88,9 +80,22 @@ class ProfileController extends Controller
             $profile->image = $request->file('image')->store('profiles','public') ;
         }
         $profile->save();
-        return to_route('profiles.index')->with('success','Profile Modifier avec success');
+        Cache::forget('profiles');
+
+        return new ProfileResource($profile);
     }
 
-
-
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Profile $profile)
+    {
+        $profile->delete();
+        Cache::forget('profiles');
+        return response()->json([
+            'message'=>'Le Profile est bien supprimer',
+            'id'=>$profile->id,
+            'errors'=>[]
+        ]);
+    }
 }

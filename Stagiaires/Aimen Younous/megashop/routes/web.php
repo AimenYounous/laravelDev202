@@ -58,6 +58,7 @@ Route::get("/produitDetail/{cat}/{id}",[ProductController::class,'produit'])->na
 //ultra
 Route::resource('profiles',ProfileController::class);
 
+Route::get('verify_email/{hash}',[ProfileController::class,'verifyEmail']);
 // public route
 Route::get('/publications', [PublicationsController::class, 'index'])
     ->name('publications.index');
