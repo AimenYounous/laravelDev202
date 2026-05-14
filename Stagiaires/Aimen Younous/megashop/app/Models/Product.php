@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
-        'category','name','price','description','stock',
-        'image','specs','ports','details','rating','reviews'
+        'name','price','image','category_id'
     ];
-    protected $casts = [
-        'specs'=>'array',
-        'ports'=> 'array'
-    ];
+
+    public function category()
+    {
+        return $this->belongsTo(Categorie::class);
+    }
 }

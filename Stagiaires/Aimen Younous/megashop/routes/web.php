@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LoginControler;
+use App\Http\Controllers\OneToManyController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
@@ -72,3 +73,8 @@ Route::middleware('auth')->group(function () {
 // Route::resource('publications',PublicationsController::class)->middleware('auth')->except(['index']);
 
 Route::get('/download/{profile}',[FileController::class,'download'])->name('download.image');
+
+Route::get('/onetomany',[OneToManyController::class,'index'])->name('onetomany.index');
+
+Route::get('/products/{categorie}',[OneToManyController::class,'products'])->name('onetomany.products');
+
